@@ -17,6 +17,7 @@
   "bugs": {
     "url": "https://github.com/wilfried237/TemperatureRecordBackEnd/issues"
   },
+  "type": "module",
   "homepage": "https://github.com/wilfried237/TemperatureRecordBackEnd#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
