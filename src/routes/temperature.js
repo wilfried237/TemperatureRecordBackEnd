@@ -19,7 +19,7 @@ router.get("/getTemperature/:userEmail", verificationToken, async(req,res)=>{
 router.post("/createTemperature", async(req, res)=>{
     try{
         const {celcius,fahrenheit,email} = req.body;
-        const user = await UserModel.findOne({email});
+        const user = await UserModel.findOne({email:email});
         if(!user){
             return res.statusCode(404).json({message: "The user doesn't exist"});
         }
