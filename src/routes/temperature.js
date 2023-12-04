@@ -16,15 +16,14 @@ router.get("/getTemperature/:userEmail", verificationToken, async(req,res)=>{
     }
 });
 
-router.post("/createTemperature/:userEmail/:celcius/:fahrenheit", async(req, res)=>{
+router.post("/createTemperature", async(req, res)=>{
     try{
-        const celcius = req.params.celcius;
-        const fahrenheit = req.params.fahrenheit;
-        const user = await UserModel.findOne({email:req.params.userEmail});
+        const {celcius,fahrenheit,email} = req.body;
+        const user = await UserModel.findOne({email});
         if(!user){
             return res.statusCode(404).json({message: "The user doesn't exist"});
         }
-        const newTemp = new TemperatureModel({celcius:celcius,fahrenheit:fahrenheit,userOwner:user._id});
+        const newTemp = new TemperatureModel({celcius,fahrenheit:fahrenheit,userOwner:user._id});
         await newTemp.save();
         res.status(200).json({message: "successfully Created record"});
     }
