@@ -24,6 +24,7 @@ router.post("/createTemperature", async(req, res)=>{
         }
         const newTemp = new TemperatureModel({celcius,fahrenheit:fahrenheit,userOwner:user._id});
         await newTemp.save();
+        console.log("good job");
         res.status(200).json({message: "successfully Created record"});
 });
 
