@@ -17,7 +17,6 @@ router.get("/getTemperature/:userEmail", verificationToken, async(req,res)=>{
 });
 
 router.post("/createTemperature", async(req, res)=>{
-    try{
         const {celcius,fahrenheit,email} = req.body;
         const user = await UserModel.findOne({email:email});
         if(!user){
@@ -26,10 +25,6 @@ router.post("/createTemperature", async(req, res)=>{
         const newTemp = new TemperatureModel({celcius,fahrenheit:fahrenheit,userOwner:user._id});
         await newTemp.save();
         res.status(200).json({message: "successfully Created record"});
-    }
-    catch(err){
-        res.json(err);
-    }
 });
 
 export {router as temperatureRouter}
