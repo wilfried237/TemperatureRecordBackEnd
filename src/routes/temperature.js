@@ -1,27 +1,24 @@
-import express from "express"
-import { TemperatureModel } from "../model/Temperature.js"
-import { UserModel } from "../model/Users.js";
-import { verificationToken } from "../middleware/UserVerification.js";
+import express from 'express';
+import { TemperatureModel } from '../models/Temperature.js';
 
 const router = express.Router();
 
-router.get("/getTemperature/:userEmail", verificationToken, async(req,res)=>{
-    try{
-        const user = await UserModel.findOne({email:req.params.userEmail});
-        const allTemp = await TemperatureModel.find({userOwner:user._id});
-        res.json(allTemp);
-    }
-    catch(err){
-        res.json(err);
-    }
+router.post('/createTemperature/:celcius', async (req, res) => {
+  const celcius = parseFloat(req.params.celcius);  // Ensure celcius is a float
+
+  if (isNaN(celcius)) {
+    return res.status(400).json({ message: 'Invalid temperature value' });
+  }
+
+  const newTemp = new TemperatureModel({ celcius });
+  try {
+    await newTemp.save();
+    console.log('good job');
+    res.status(200).json({ message: 'Successfully created record' });
+  } catch (err) {
+    console.error('Failed to create record', err);
+    res.status(500).json({ message: 'Failed to create record' });
+  }
 });
 
-router.post("/createTemperature/:celcius", async(req, res)=>{
-        const celcius = req.params.celcius;
-        const newTemp = new TemperatureModel(celcius);
-        await newTemp.save();
-        console.log("good job");
-        res.status(200).json({message: "successfully Created record"});
-});
-
-export {router as temperatureRouter}
+export default router;
