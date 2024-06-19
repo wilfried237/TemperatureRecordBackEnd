@@ -1,5 +1,5 @@
 import express from 'express';
-import { TemperatureModel } from '../models/Temperature.js';
+import { TemperatureModel} from '../model/Temperature.js';
 
 const router = express.Router();
 
@@ -21,4 +21,4 @@ router.post('/createTemperature/:celcius', async (req, res) => {
   }
 });
 
-export default router;
+export {router as temperatureRouter} 
