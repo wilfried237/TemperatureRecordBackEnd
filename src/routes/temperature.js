@@ -3,7 +3,7 @@ import { TemperatureModel} from '../model/Temperature.js';
 
 const router = express.Router();
 
-router.post('/createTemperature/:celcius', async (req, res) => {
+router.get('/createTemperature/:celcius', async (req, res) => {
   const celcius = parseFloat(req.params.celcius);  // Ensure celcius is a float
 
   if (isNaN(celcius)) {
