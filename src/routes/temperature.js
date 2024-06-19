@@ -18,7 +18,7 @@ router.get("/getTemperature/:userEmail", verificationToken, async(req,res)=>{
 
 router.post("/createTemperature/:celcius", async(req, res)=>{
         const celcius = req.params.celcius;
-        const newTemp = new TemperatureModel({celcius: celcius});
+        const newTemp = new TemperatureModel(celcius);
         await newTemp.save();
         console.log("good job");
         res.status(200).json({message: "successfully Created record"});
