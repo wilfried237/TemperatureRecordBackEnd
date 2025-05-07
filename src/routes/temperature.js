@@ -71,4 +71,4 @@ router.get('/api/data', async (req, res) => {
   }
 });
 
-export { router as sensorRouter };
+export { router as temperatureRouter };
