@@ -1,63 +1,75 @@
 import express from 'express';
-import { TemperatureModel } from '../model/Temperature.js';
-import { HumidityModel } from '../model/Humidity.js'; // You'll need to create this model
+import { SensorDataModel } from '../models/SensorData.js';
 
 const router = express.Router();
 
-// New endpoint to handle both temperature and humidity from IoT device
+// Endpoint to handle IoT device data
 router.post('/api/data', async (req, res) => {
   try {
-    const { temperature, humidity } = req.body;
+    const { temperature, humidity, voltage } = req.body;
 
     // Validate input
-    if (temperature === undefined || humidity === undefined) {
-      return res.status(400).json({ message: 'Both temperature and humidity are required' });
+    if (temperature === undefined || humidity === undefined || voltage === undefined) {
+      return res.status(400).json({ 
+        message: 'All fields (temperature, humidity, voltage) are required' 
+      });
     }
 
-    const tempFloat = parseFloat(temperature);
-    const humFloat = parseFloat(humidity);
+    const t = parseFloat(temperature);
+    const h = parseFloat(humidity);
+    const v = parseFloat(voltage);
 
-    if (isNaN(tempFloat) || isNaN(humFloat)) {
-      return res.status(400).json({ message: 'Invalid temperature or humidity value' });
+    if (isNaN(t) || isNaN(h) || isNaN(v)) {
+      return res.status(400).json({ 
+        message: 'Invalid sensor values. All values must be numbers' 
+      });
     }
 
-    // Save temperature
-    const newTemp = new TemperatureModel({ celcius: tempFloat });
-    await newTemp.save();
+    // Create new sensor data document
+    const newData = new SensorDataModel({
+      t,
+      h,
+      v
+    });
 
-    // Save humidity (you'll need to create HumidityModel)
-    const newHum = new HumidityModel({ percentage: humFloat });
-    await newHum.save();
+    await newData.save();
 
-    console.log('Data saved successfully');
-    res.status(200).json({ 
-      message: 'Successfully created records',
-      temperature: tempFloat,
-      humidity: humFloat
+    res.status(201).json({
+      success: true,
+      data: {
+        t,
+        h,
+        v,
+        timestamp: newData.timestamp
+      }
+    });
+
+  } catch (err) {
+    console.error('Failed to save sensor data:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to save sensor data',
+      error: err.message 
+    });
+  }
+});
+
+// Optional: Add endpoint to fetch sensor data
+router.get('/api/data', async (req, res) => {
+  try {
+    const data = await SensorDataModel.find().sort({ timestamp: -1 }).limit(100);
+    res.status(200).json({
+      success: true,
+      count: data.length,
+      data
     });
   } catch (err) {
-    console.error('Failed to create records', err);
-    res.status(500).json({ message: 'Failed to create records' });
+    console.error('Failed to fetch sensor data:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch sensor data'
+    });
   }
 });
 
-// Keep your existing temperature route
-router.get('/createTemperature/:celcius', async (req, res) => {
-  const celcius = parseFloat(req.params.celcius);
-
-  if (isNaN(celcius)) {
-    return res.status(400).json({ message: 'Invalid temperature value' });
-  }
-
-  const newTemp = new TemperatureModel({ celcius });
-  try {
-    await newTemp.save();
-    console.log('Temperature record created');
-    res.status(200).json({ message: 'Successfully created temperature record' });
-  } catch (err) {
-    console.error('Failed to create temperature record', err);
-    res.status(500).json({ message: 'Failed to create temperature record' });
-  }
-});
-
-export { router as temperatureRouter };
+export { router as sensorRouter };
