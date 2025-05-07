@@ -1,6 +1,5 @@
 import express from 'express';
-import { SensorDataModel } from '../model/SensorDataModel';
-
+import { SensorDataModel } from '../model/SensorDataModel.js';
 const router = express.Router();
 
 // Endpoint to handle IoT device data
